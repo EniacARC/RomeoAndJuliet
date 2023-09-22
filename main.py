@@ -6,6 +6,7 @@ Date: 22/9/2023
 """
 
 import os
+import logging
 
 # Define Constants
 ENCRYPTION_TABLE = {
@@ -21,6 +22,11 @@ ENCRYPTION_TABLE = {
     '.': 100, ';': 101, '\'': 102, '?': 103, '!': 104,
     ':': 105
 }
+
+LOG_FORMAT = '%(levelname)s | %(asctime)s | %(processName)s | %(message)s'
+LOG_LEVEL = logging.DEBUG
+LOG_DIR = 'log'
+LOG_FILE = LOG_DIR + '/logger.log'
 
 
 def encrypt_message(message):
@@ -63,10 +69,7 @@ def write_to_file(text, path):
     """
     try:
         # open file if exists, create file if not
-        if os.path.isfile(path):
-            file = open(path, "w")
-        else:
-            file = open(path, "x")
+        file = open(path, "w")
 
         # override the file contents with the text and close the file
         file.write(text)
@@ -88,12 +91,18 @@ def read_from_file(path):
         file = open(path, "r")
         return file.read()
     except OSError:
+        print(OSError)
         print("An error has occurred while trying to read file")
 
 
 def main():
-    write_to_file("Hello File!", "demo-file.txt")
+    write_to_file("what's up?", "demo-file.txt")
+    print(read_from_file("demo-file.txt"))
 
 
 if __name__ == '__main__':
+    # make sure we have a logging directory and configure the logging
+    if not os.path.isdir(LOG_DIR):
+        os.makedirs(LOG_DIR)
+    logging.basicConfig(format=LOG_FORMAT, filename=LOG_FILE, level=LOG_LEVEL)
     main()
