@@ -5,6 +5,8 @@ Description:
 Date: 22/9/2023
 """
 
+import os
+
 # Define Constants
 ENCRYPTION_TABLE = {
     'A': 56, 'B': 57, 'C': 58, 'D': 59, 'E': 40, 'F': 41,
@@ -50,11 +52,47 @@ def decrypt_message(message):
     return ''.join(map(lambda int_to_decrypt: key_list[val_list.index(int_to_decrypt)], message))
 
 
+def write_to_file(text, path):
+    """writes a message to a txt file at the given path
+
+    :param text: the message to write in the txt file
+    :type text: str
+    :param path: the path to the txt file
+    :type path: str
+    :return: None
+    """
+    try:
+        # open file if exists, create file if not
+        if os.path.isfile(path):
+            file = open(path, "w")
+        else:
+            file = open(path, "x")
+
+        # override the file contents with the text and close the file
+        file.write(text)
+        file.close()
+    except OSError:
+        print("An error has occurred while trying to write to file")
+
+
+def read_from_file(path):
+    """reads the txt file and returns its contents
+
+    :param path: the path to the txt file
+    "type path: str
+    :return: the contents of the txt file
+    :rtype: str
+    """
+    try:
+        # opens and read the txt file contents
+        file = open(path, "r")
+        return file.read()
+    except OSError:
+        print("An error has occurred while trying to read file")
+
+
 def main():
-    print(decrypt_message(
-        [59, 36, 35, 102, 91, 98, 94, 12, 90, 91, 16, 98, 96, 36, 92, 39, 98, 33, 36, 93, 16, 98, 36, 35, 98, 90, 36,
-         34, 16, 13, 36, 15, 96, 99, 98, 94, 19, 36, 98, 15, 36, 16, 90, 35, 102, 91, 98, 93, 12, 33, 92, 16, 98, 30,
-         91, 100]))
+    write_to_file("Hello File!", "demo-file.txt")
 
 
 if __name__ == '__main__':
