@@ -91,12 +91,10 @@ def read_from_file(path):
         file = open(path, "r")
         return file.read()
     except OSError:
-        print(OSError)
         print("An error has occurred while trying to read file")
 
 
 def main():
-    write_to_file("what's up?", "demo-file.txt")
     print(read_from_file("demo-file.txt"))
 
 
