@@ -16,13 +16,45 @@ ENCRYPTION_TABLE = {
     'k': 32, 'l': 33, 'm': 34, 'n': 35, 'o': 36, 'p': 37,
     'q': 38, 'r': 39, 's': 90, 't': 91, 'u': 92, 'v': 93,
     'w': 94, 'x': 95, 'y': 96, 'z': 97, ' ': 98, ',': 99,
-    '.': 100, ';': 101, '\'':  102, '?': 103, '!': 104,
+    '.': 100, ';': 101, '\'': 102, '?': 103, '!': 104,
     ':': 105
-    }
+}
+
+
+def encrypt_message(message):
+    """encrypts a message according to the ENCRYPTION_TABLE constant
+
+    :param message: the message the function encrypts
+    :type message: str
+    :return: a list containing the encrypted message
+    :rtype: list of int
+    """
+
+    # create a list that substitutes each char to it's corresponding according to the ENCRYPTION_TABLE constant
+    return list(map(lambda char_to_encrypt: ENCRYPTION_TABLE[char_to_encrypt], message))
+
+
+def decrypt_message(message):
+    """decrypts a message according to the ENCRYPTION_TABLE constant
+
+    :param message: the message the function decrypts
+    :type message: list of int
+    :return: the decrypted message
+    :rtype: str
+    """
+    # create separate lists for the keys and values of the encryption table
+    key_list = list(ENCRYPTION_TABLE.keys())
+    val_list = list(ENCRYPTION_TABLE.values())
+
+    # the key location of each number according to the ENCRYPTION_TABLE constant and join it into a string
+    return ''.join(map(lambda int_to_decrypt: key_list[val_list.index(int_to_decrypt)], message))
 
 
 def main():
-    print("Hello World. My name is Yonathan")
+    print(decrypt_message(
+        [59, 36, 35, 102, 91, 98, 94, 12, 90, 91, 16, 98, 96, 36, 92, 39, 98, 33, 36, 93, 16, 98, 36, 35, 98, 90, 36,
+         34, 16, 13, 36, 15, 96, 99, 98, 94, 19, 36, 98, 15, 36, 16, 90, 35, 102, 91, 98, 93, 12, 33, 92, 16, 98, 30,
+         91, 100]))
 
 
 if __name__ == '__main__':
