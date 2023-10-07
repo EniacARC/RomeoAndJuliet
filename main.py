@@ -1,7 +1,7 @@
 """
 Author: Yonathan Chapal
 Program name: RomeoAndJuliet
-Description:
+Description: a program to encrypt and decrypt messages using an encryption table
 Date: 22/9/2023
 """
 
@@ -99,13 +99,16 @@ def read_from_file(path):
 
 
 def validate_input(user_input):
-    """validate that the input is a string (assumes all chars are present in ENCRYPTION_TABLE)
+    """validate that all the chars in the input are in the ENCRYPTION_TABLE.
 
     :param user_input: the user input string
     :return: if the user input is valid
     :rtype: bool
     """
-    return isinstance(user_input, str) and not user_input == ""
+    for c in user_input:
+        if ENCRYPTION_TABLE.get(c) is None:
+            return False
+    return True
 
 
 def main():
@@ -121,9 +124,9 @@ def main():
             message = input("Please enter message to encrypt: ")
             logging.debug(f"user entered: '{message}'")
             valid = validate_input(message)
-        if not valid:
-            print("error! please enter a string")
-            logging.warning("user input was invalid")
+            if not valid:
+                print("error! please enter a valid message!")
+                logging.warning("user input was invalid")
 
         write_to_file(encrypt_message(message), "encrypted_msg.txt")
 
@@ -142,5 +145,5 @@ if __name__ == '__main__':
     logging.basicConfig(format=LOG_FORMAT, filename=LOG_FILE, level=LOG_LEVEL)
 
     assert validate_input("fdyDRTtfudf")
-    assert not validate_input(54457834)
+    assert not validate_input("hello wor~ld")
     main()
