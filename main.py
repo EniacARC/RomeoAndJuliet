@@ -1,11 +1,13 @@
 """
 Author: Yonathan Chapal
 Program name: RomeoAndJuliet
-Description:
+Description: a program to encrypt and decrypt messages using an encryption table
 Date: 22/9/2023
 """
 
 import os
+import sys
+import logging
 
 # Define Constants
 ENCRYPTION_TABLE = {
@@ -22,25 +24,30 @@ ENCRYPTION_TABLE = {
     ':': 105
 }
 
+LOG_FORMAT = '%(levelname)s | %(asctime)s | %(processName)s | %(message)s'
+LOG_LEVEL = logging.DEBUG
+LOG_DIR = 'log'
+LOG_FILE = LOG_DIR + '/logger.log'
+
 
 def encrypt_message(message):
     """encrypts a message according to the ENCRYPTION_TABLE constant
 
     :param message: the message the function encrypts
     :type message: str
-    :return: a list containing the encrypted message
-    :rtype: list of int
+    :return: a string containing the encrypted message separated by commas
+    :rtype: str
     """
 
     # create a list that substitutes each char to it's corresponding according to the ENCRYPTION_TABLE constant
-    return list(map(lambda char_to_encrypt: ENCRYPTION_TABLE[char_to_encrypt], message))
+    return ','.join((map(lambda char_to_encrypt: str(ENCRYPTION_TABLE[char_to_encrypt]), message)))
 
 
 def decrypt_message(message):
     """decrypts a message according to the ENCRYPTION_TABLE constant
 
     :param message: the message the function decrypts
-    :type message: list of int
+    :type message: string
     :return: the decrypted message
     :rtype: str
     """
@@ -49,7 +56,7 @@ def decrypt_message(message):
     val_list = list(ENCRYPTION_TABLE.values())
 
     # the key location of each number according to the ENCRYPTION_TABLE constant and join it into a string
-    return ''.join(map(lambda int_to_decrypt: key_list[val_list.index(int_to_decrypt)], message))
+    return ''.join(map(lambda int_to_decrypt: key_list[val_list.index(int(int_to_decrypt))], message.split(',')))
 
 
 def write_to_file(text, path):
@@ -63,37 +70,87 @@ def write_to_file(text, path):
     """
     try:
         # open file if exists, create file if not
-        if os.path.isfile(path):
-            file = open(path, "w")
-        else:
-            file = open(path, "x")
+        file = open(path, "w")
 
         # override the file contents with the text and close the file
         file.write(text)
+        logging.debug(f"program wrote to file at: {path}")
         file.close()
     except OSError:
-        print("An error has occurred while trying to write to file")
+        logging.error("An error has occurred while trying to read file")
 
 
 def read_from_file(path):
     """reads the txt file and returns its contents
 
     :param path: the path to the txt file
-    "type path: str
+    ":type path: str
     :return: the contents of the txt file
     :rtype: str
     """
     try:
         # opens and read the txt file contents
         file = open(path, "r")
-        return file.read()
+        text = file.read()
+        logging.debug(f"file at: {path} was read successfully")
+        return text
     except OSError:
         print("An error has occurred while trying to read file")
+        logging.error(f"An error has occurred while trying to read file at {path}")
+        return -1
+
+
+def validate_input(user_input):
+    """validate that all the chars in the input are in the ENCRYPTION_TABLE.
+
+    :param user_input: the user input string
+    :return: if the user input is valid
+    :rtype: bool
+    """
+    for c in user_input:
+        if ENCRYPTION_TABLE.get(c) is None:
+            return False
+    return True
 
 
 def main():
-    write_to_file("Hello File!", "demo-file.txt")
+    if sys.argv[1] != "encrypt" and sys.argv[1] != "decrypt":
+        logging.error(f"command line argument: '{sys.argv[1]}' isn't a valid argument")
+
+    elif sys.argv[1] == "encrypt":
+        valid = False
+        message = ""
+
+        # wait until user enters a valid input
+        while not valid:
+            message = input("Please enter message to encrypt: ")
+            logging.debug(f"user entered: '{message}'")
+            valid = validate_input(message)
+            if not valid:
+                print("error! please enter a valid message!")
+                logging.warning("user input was invalid")
+
+        write_to_file(encrypt_message(message), "encrypted_msg.txt")
+
+    else:
+        message = read_from_file("encrypted_msg.txt")
+        if message != -1:
+            if validate_input(message):
+                message = decrypt_message(message)
+                logging.info(f"message in file is: {message}")
+                logging.info(f"decrypted successfully: {message}")
+                print(f"the message is: {message}")
+            else:
+                print(f"input message was invalid!")
+                logging.error(f"input message: '{message}' was invalid!")
 
 
 if __name__ == '__main__':
+    # make sure we have a logging directory and configure the logging
+    if not os.path.isdir(LOG_DIR):
+        os.makedirs(LOG_DIR)
+    logging.basicConfig(format=LOG_FORMAT, filename=LOG_FILE, level=LOG_LEVEL)
+
+    assert validate_input("fdyDRTtfudf")
+    assert not validate_input("hello wor~ld")
     main()
