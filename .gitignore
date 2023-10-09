@@ -1,3 +1,4 @@
 /venv/
 .idea
-
+encrypted_msg.txt
+/log
