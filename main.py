@@ -23,6 +23,8 @@ ENCRYPTION_TABLE = {
     '.': 100, ';': 101, '\'': 102, '?': 103, '!': 104,
     ':': 105
 }
+KEY_LIST = list(ENCRYPTION_TABLE.keys())
+VAL_LIST = list(ENCRYPTION_TABLE.values())
 
 LOG_FORMAT = '%(levelname)s | %(asctime)s | %(processName)s | %(message)s'
 LOG_LEVEL = logging.DEBUG
@@ -51,12 +53,9 @@ def decrypt_message(message):
     :return: the decrypted message
     :rtype: str
     """
-    # create separate lists for the keys and values of the encryption table
-    key_list = list(ENCRYPTION_TABLE.keys())
-    val_list = list(ENCRYPTION_TABLE.values())
 
-    # the key location of each number according to the ENCRYPTION_TABLE constant and join it into a string
-    return ''.join(map(lambda int_to_decrypt: key_list[val_list.index(int(int_to_decrypt))], message.split(',')))
+    # get the key location of each number according to the ENCRYPTION_TABLE constant and join it into a string
+    return ''.join(map(lambda int_to_decrypt: KEY_LIST[VAL_LIST.index(int(int_to_decrypt))], message.split(',')))
 
 
 def write_to_file(text, path):
