@@ -67,16 +67,15 @@ def write_to_file(text, path):
     :type path: str
     :return: None
     """
-    try:
-        # open file if exists, create file if not
-        with open(path, "w") as file:
+    # open file if exists, create file if not
+    with open(path, "w") as file:
+        try:
             # override the file contents with the text and close the file
             file.write(text)
             logging.debug(f"program wrote to file at: {path}")
-            file.close()
-    except OSError:
-        logging.error(f"An error has occurred while trying to write to file at {path}")
-        print("an error has occurred while trying to write to file")
+        except OSError:
+            logging.error(f"An error has occurred while trying to write to file at {path}")
+            print("an error has occurred while trying to write to file")
 
 
 def read_from_file(path):
@@ -87,17 +86,16 @@ def read_from_file(path):
     :return: the contents of the txt file
     :rtype: str
     """
-    try:
-        # opens and read the txt file contents
-        with open(path, "r") as file:
+    with open(path, "r") as file:
+        try:
+            # opens and read the txt file contents
             text = file.read()
             logging.debug(f"file at: {path} was read successfully")
-            file.close()
             return text
-    except OSError:
-        print("an error has occurred while trying to read file")
-        logging.error(f"An error has occurred while trying to read file at {path}")
-        return -1
+        except OSError:
+            print("an error has occurred while trying to read file")
+            logging.error(f"An error has occurred while trying to read file at {path}")
+    return -1
 
 
 def validate(mode, program_input, expected_output):
