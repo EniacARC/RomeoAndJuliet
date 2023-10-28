@@ -95,7 +95,7 @@ def read_from_file(path):
         except OSError:
             print("an error has occurred while trying to read file")
             logging.error(f"An error has occurred while trying to read file at {path}")
-    return -1
+    return "-1"
 
 
 def validate(mode, program_input, expected_output):
@@ -129,7 +129,7 @@ def main():
 
     else:
         message = read_from_file("encrypted_msg.txt")
-        if message != -1:
+        if message != "-1":
             logging.info(f"message in file is: {message}")
             message = decrypt_message(message)
             logging.info(f"decrypted successfully: {message}")
