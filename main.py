@@ -67,13 +67,12 @@ def write_to_file(text, path):
     :type path: str
     :return: None
     """
+    # open file if exists, create file if not
     try:
-        # open file if exists, create file if not
         with open(path, "w") as file:
             # override the file contents with the text and close the file
             file.write(text)
             logging.debug(f"program wrote to file at: {path}")
-            file.close()
     except OSError:
         logging.error(f"An error has occurred while trying to write to file at {path}")
         print("an error has occurred while trying to write to file")
@@ -83,59 +82,59 @@ def read_from_file(path):
     """reads the txt file and returns its contents
 
     :param path: the path to the txt file
-    ":type path: str
+    :type path: str
     :return: the contents of the txt file
     :rtype: str
     """
     try:
-        # opens and read the txt file contents
         with open(path, "r") as file:
+            # opens and read the txt file contents
             text = file.read()
             logging.debug(f"file at: {path} was read successfully")
-            file.close()
             return text
     except OSError:
         print("an error has occurred while trying to read file")
         logging.error(f"An error has occurred while trying to read file at {path}")
-        return -1
+    return None
 
 
-def validate_input(user_input):
-    """validate that all the chars in the input are in the ENCRYPTION_TABLE.
+def validate(mode, program_input, expected_output):
+    """make sure that the program decrypts and encrypts as expected
 
-    :param user_input: the user input string
-    :return: if the user input is valid
+    :param mode: what mode of the program to check, encrypt or decrypt
+    :type mode: str
+    :param program_input: the input given to the program
+    :type program_input: str
+    :param expected_output: the expected output of the program given the input
+    :type expected_output: str
+    :return: if the program works as expected
     :rtype: bool
     """
     # checks all chars are in the table
-    for c in user_input:
-        if ENCRYPTION_TABLE.get(c) is None:
-            return False
-    return True
+    if mode == "encrypt":
+        return expected_output == encrypt_message(program_input)
+    elif mode == "decrypt":
+        return expected_output == decrypt_message(program_input)
+    return False
 
 
 def main():
-    if sys.argv[1] != "encrypt" and sys.argv[1] != "decrypt":
+    if len(sys.argv) < 2:
+        logging.error("No command line argument was provided!")
+        print("Please provide a command line argument (encrypt, decrypt)")
+
+    elif sys.argv[1].lower() != "encrypt" and sys.argv[1].lower() != "decrypt":
         logging.error(f"command line argument: '{sys.argv[1]}' isn't a valid argument")
+        print("please provide a valid command line argument (encrypt, decrypt)")
 
     elif sys.argv[1] == "encrypt":
-        valid = False
-        message = ""
-
-        # wait until user enters a valid input
-        while not valid:
-            message = input("Please enter message to encrypt: ")
-            logging.debug(f"user entered: '{message}'")
-            valid = validate_input(message)
-            if not valid:
-                print("error! please enter a valid message!")
-                logging.warning("user input was invalid")
-
+        # assume all characters entered are valid
+        message = input("Please enter message to encrypt: ")
         write_to_file(encrypt_message(message), "encrypted_msg.txt")
 
     else:
         message = read_from_file("encrypted_msg.txt")
-        if message != -1:
+        if message is not None:
             logging.info(f"message in file is: {message}")
             message = decrypt_message(message)
             logging.info(f"decrypted successfully: {message}")
@@ -148,6 +147,17 @@ if __name__ == '__main__':
         os.makedirs(LOG_DIR)
     logging.basicConfig(format=LOG_FORMAT, filename=LOG_FILE, level=LOG_LEVEL)
 
-    assert validate_input("fdyDRTtfudf")
-    assert not validate_input("hello wor~ld")
+    program_in = ("My bounty is as boundless as the sea, My love as deep; "
+                  "the more I give to thee, The more I have, for both are infinite.")
+    expected_out = ("48,96,98,13,36,92,35,91,96,98,30,90,98,12,90,98,13,36,92,35,15,33,16,90,90,98,12,"
+                    "90,98,91,19,16,98,90,16,12,99,98,48,96,98,33,36,93,16,98,12,90,98,15,16,16,37,101,"
+                    "98,91,19,16,98,34,36,39,16,98,44,98,18,30,93,16,98,91,36,98,91,19,16,16,99,98,65,19,"
+                    "16,98,34,36,39,16,98,44,98,19,12,93,16,99,98,17,36,39,98,13,36,91,19,98,12,39,16,98,30,"
+                    "35,17,30,35,30,91,16,100")
+    assert validate("encrypt", program_in, expected_out)
+    assert validate("decrypt", expected_out, program_in)
+
+    program_in = "Don't waste your love on somebody, who doesn't value it."
+    assert not validate("encrypt", program_in, expected_out)
+    assert not validate("decrypt", expected_out, program_in)
     main()
