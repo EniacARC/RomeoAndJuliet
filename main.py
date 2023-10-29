@@ -53,7 +53,8 @@ def decrypt_message(message):
     :return: the decrypted message
     :rtype: str
     """
-
+    if message == '':
+        return ''
     # get the key location of each number according to the ENCRYPTION_TABLE constant and join it into a string
     return ''.join(map(lambda int_to_decrypt: KEY_LIST[VAL_LIST.index(int(int_to_decrypt))], message.split(',')))
 
