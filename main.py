@@ -40,8 +40,6 @@ def encrypt_message(message):
     :return: a string containing the encrypted message separated by commas
     :rtype: str
     """
-    if message == '':
-        return ''
     # create a list that substitutes each char to it's corresponding according to the ENCRYPTION_TABLE constant
     return ','.join((map(lambda char_to_encrypt: str(ENCRYPTION_TABLE[char_to_encrypt]), message)))
 
