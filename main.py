@@ -86,6 +86,7 @@ def read_from_file(path):
     :return: the contents of the txt file
     :rtype: str
     """
+
     try:
         with open(path, "r") as file:
             # opens and read the txt file contents
