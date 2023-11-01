@@ -120,6 +120,10 @@ def validate(mode, program_input, expected_output):
 
 
 def main():
+    """
+    The Main Function
+    
+    """
     if len(sys.argv) < 2:
         logging.error("No command line argument was provided!")
         print("Please provide a command line argument (encrypt, decrypt)")
